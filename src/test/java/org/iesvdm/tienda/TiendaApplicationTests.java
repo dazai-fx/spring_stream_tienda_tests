@@ -120,7 +120,6 @@ class TiendaApplicationTests {
 				System.out.printf("%-35s %-10.2f%n", tupla.nombre(), tupla.precio())
 		);
 
-
 	}
 	
 	/**
@@ -129,7 +128,7 @@ class TiendaApplicationTests {
 	@Test
 	void test4() {
 		var listFabs = fabRepo.findAll();
-		//TODO
+
 
 		record Tupla (String nombre, String iniciales){}
 		var result = listFabs.stream()
