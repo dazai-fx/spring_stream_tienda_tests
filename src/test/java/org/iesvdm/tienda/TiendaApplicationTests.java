@@ -54,13 +54,20 @@ class TiendaApplicationTests {
 		var listaNombresPrecios = listProds
 				.stream()
 				.map((p -> new Tupla(p.getNombre(), p.getPrecio())))
-				.map(t -> t.nombre() + " , "+t.precio())
 				.toList();
 
-		System.out.println("Nombre producto\t\t\tPrecio");
-		listaNombresPrecios.forEach(x -> System.out.println(x));
+//		System.out.println("Nombre producto\t\t\tPrecio");
+//		listaNombresPrecios.forEach(x -> System.out.println(x));
 
-		//TODO
+		// Encabezado de la tabla
+		System.out.printf("%-35s %-10s%n", "Nombre producto", "Precio");
+		System.out.println("-----------------------------------------------");
+
+		// Imprimir cada producto en formato de tabla
+		listaNombresPrecios.forEach(tupla ->
+				System.out.printf("%-35s %-10.2f%n", tupla.nombre(), tupla.precio())
+		);
+
 	}
 	
 	
@@ -76,14 +83,14 @@ class TiendaApplicationTests {
 		var listaNombresPrecios = listProds
 				.stream()
 				.map((p -> new Tupla(p.getNombre(), convertirEurosDolares(p.getPrecio()))))
-				.map(t -> t.nombre() + " , "+t.precio())
 				.toList();
 
-		System.out.printf("%-20s | %-10s%n", "Nombre del Producto", "Precio");
-		System.out.println("--------------------------------------");
-		listaNombresPrecios.forEach(producto -> System.out.println(producto));
+		System.out.printf("%-35s | %-20s%n", "Nombre del Producto", "Precio en dolares");
+		System.out.println("-------------------------------------------------------");
+		listaNombresPrecios.forEach(tupla ->
+				System.out.printf("%-38s %-20.2f%n", tupla.nombre(), tupla.precio())
+		);
 
-		//TODO
 	}
 
 	public static double convertirEurosDolares(double euros){
@@ -97,7 +104,23 @@ class TiendaApplicationTests {
 	@Test
 	void test3() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre, double precio){}
+		var listaNombresPrecios = listProds
+				.stream()
+				.map((p -> new Tupla(p.getNombre().toUpperCase(), p.getPrecio())))
+				.toList();
+
+		// Encabezado de la tabla
+		System.out.printf("%-35s %-10s%n", "Nombre producto", "Precio");
+		System.out.println("-----------------------------------------------");
+
+		// Imprimir cada producto en formato de tabla
+		listaNombresPrecios.forEach(tupla ->
+				System.out.printf("%-35s %-10.2f%n", tupla.nombre(), tupla.precio())
+		);
+
+
 	}
 	
 	/**
