@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 
 @SpringBootTest
 class TiendaApplicationTests {
@@ -47,6 +49,17 @@ class TiendaApplicationTests {
 	@Test
 	void test1() {
 		var listProds = prodRepo.findAll();
+
+		record Tupla (String nombre, double precio){}
+		var listaNombresPrecios = listProds
+				.stream()
+				.map((p -> new Tupla(p.getNombre(), p.getPrecio())))
+				.map(t -> t.nombre() + " , "+t.precio())
+				.toList();
+
+		System.out.println("Nombre producto\t\t\tPrecio");
+		listaNombresPrecios.forEach(x -> System.out.println(x));
+
 		//TODO
 	}
 	
@@ -56,8 +69,26 @@ class TiendaApplicationTests {
 	 */
 	@Test
 	void test2() {
+
 		var listProds = prodRepo.findAll();
+
+		record Tupla (String nombre, double precio){}
+		var listaNombresPrecios = listProds
+				.stream()
+				.map((p -> new Tupla(p.getNombre(), convertirEurosDolares(p.getPrecio()))))
+				.map(t -> t.nombre() + " , "+t.precio())
+				.toList();
+
+		System.out.printf("%-20s | %-10s%n", "Nombre del Producto", "Precio");
+		System.out.println("--------------------------------------");
+		listaNombresPrecios.forEach(producto -> System.out.println(producto));
+
 		//TODO
+	}
+
+	public static double convertirEurosDolares(double euros){
+		final Double TASA_DE_CAMBIO=1.08;
+		return euros*TASA_DE_CAMBIO;
 	}
 	
 	/**
@@ -76,6 +107,14 @@ class TiendaApplicationTests {
 	void test4() {
 		var listFabs = fabRepo.findAll();
 		//TODO
+
+		record Tupla (String nombre, String iniciales){}
+		var result = listFabs.stream()
+				.map(p -> new Tupla(p.getNombre(), p.getNombre().substring(0, 2).toUpperCase()))
+				.toList();
+
+		result.forEach(tupla -> System.out.println("Nombre: "+ tupla.nombre()+ ", iniciales:0"+ tupla.iniciales()));
+
 	}
 	
 	/**
