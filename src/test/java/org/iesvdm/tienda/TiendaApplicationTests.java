@@ -7,7 +7,10 @@ import org.iesvdm.tienda.repository.ProductoRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
@@ -171,7 +174,7 @@ class TiendaApplicationTests {
 				.map(f -> new Tupla(f.getCodigo()))
 				.toList();
 
-		System.out.printf("%-35s%n", "Nombre fabricante");
+		System.out.printf("%-35s%n", "Codigo");
 		System.out.println("------------------------");
 
 		fabricantesConProductos.forEach( tupla ->
@@ -187,9 +190,22 @@ class TiendaApplicationTests {
 	void test6() {
 		var listFabs = fabRepo.findAll();
 
-		record Tupla(Integer codigoFabricante){}
+		record Tupla(String nombre){}
 
-		//TODO
+		var listaFabricantes = listFabs
+				.stream()
+				.sorted((f1, f2) -> f2.getNombre().compareTo(f1.getNombre()))
+				.map(f -> new Tupla(f.getNombre()))
+				.toList();
+
+		System.out.printf("%n%-35s%n", "Nombre");
+		System.out.println("----------------------");
+		listaFabricantes.forEach(tupla -> {
+			System.out.printf("%-35s%n", tupla.nombre());
+		});
+
+		System.out.println();
+
 	}
 	
 	/**
@@ -198,7 +214,30 @@ class TiendaApplicationTests {
 	@Test
 	void test7() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+//		Revisar en clase
+
+		record Tupla (String nombre, double precio){}
+		// es necesario usar comparator si quiero usar thenComparingDouble y solo se hace una llamada a sorted porque si intento hacer 2 se sobreescribe.
+		var listaProductos = listProds
+				.stream()
+				.sorted(Comparator.comparing(Producto::getNombre)
+						.thenComparing(Comparator.comparingDouble(Producto::getPrecio).reversed()))
+				.map(p -> new Tupla (p.getNombre(), p.getPrecio()))
+				.toList();
+
+
+		System.out.printf("%n%-35s%-15s%n", "| Nombre", "| Precio |");
+		System.out.println("---------------------------------------------------");
+
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-33s| %-13.2f|%n", tupla.nombre(), tupla.precio());
+		});
+
+		System.out.println("---------------------------------------------------");
+
+		System.out.println();
+
 	}
 	
 	/**
@@ -207,7 +246,23 @@ class TiendaApplicationTests {
 	@Test
 	void test8() {
 		var listFabs = fabRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre){}
+
+		var primeros5Fabricantes = listFabs.stream()
+				.sorted(Comparator.comparing(Fabricante::getCodigo))
+				.limit(5)
+				.map(f -> new Tupla(f.getNombre()))
+				.toList();
+
+		System.out.println("----------------------------");
+		System.out.printf("| %-25s | %n", "Nombre");
+		System.out.println("----------------------------");
+		primeros5Fabricantes.forEach( Tupla ->
+				System.out.printf("| %-25s | %n", Tupla.nombre())
+		);
+		System.out.println("----------------------------");
+
 	}
 	
 	/**
@@ -216,7 +271,24 @@ class TiendaApplicationTests {
 	@Test
 	void test9() {
 		var listFabs = fabRepo.findAll();
-		//TODO		
+
+		record Tupla (int codigo, String nombre) {}
+
+		var lista2Fabricantes = listFabs.stream()
+				.skip(3)
+				.limit(2)
+				.map(f -> new Tupla(f.getCodigo(), f.getNombre()))
+				.toList();
+
+		System.out.println("--------------------------------------------------------");
+		System.out.printf("| %-25s || %-25s | %n", "Codigo", "Nombre" );
+		System.out.println("--------------------------------------------------------");
+		lista2Fabricantes.forEach( tupla ->
+				System.out.printf("| %-25d || %-25s | %n", tupla.codigo(), tupla.nombre() )
+		);
+		System.out.println("--------------------------------------------------------");
+
+
 	}
 	
 	/**
@@ -225,7 +297,26 @@ class TiendaApplicationTests {
 	@Test
 	void test10() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre, double precio) {}
+
+		var productoMasBarato = listProds.stream()
+				.min(Comparator.comparing(Producto::getPrecio))
+				.map(p -> new Tupla(p.getNombre(), p.getPrecio()));
+
+		System.out.println("--------------------------------------------------------");
+		System.out.printf("| %-25s || %-25s | %n", "nombre", "precio" );
+		System.out.println("--------------------------------------------------------");
+
+		if (productoMasBarato.isPresent()) {
+			Tupla tupla = productoMasBarato.get();
+			System.out.printf("| %-25s || %-25.2f | %n", tupla.nombre(), tupla.precio());
+		} else {
+			System.out.printf("| %-25s || %-25s | %n", "No se encontró", "producto");
+		}
+
+		System.out.println("--------------------------------------------------------");
+
 	}
 	
 	/**
@@ -234,7 +325,26 @@ class TiendaApplicationTests {
 	@Test
 	void test11() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre, double precio) {}
+
+		var productoMasBarato = listProds.stream()
+				.max(Comparator.comparing(Producto::getPrecio))
+				.map(p -> new Tupla(p.getNombre(), p.getPrecio()));
+
+		System.out.println("--------------------------------------------------------");
+		System.out.printf("| %-25s || %-25s | %n", "nombre", "precio" );
+		System.out.println("--------------------------------------------------------");
+
+		if (productoMasBarato.isPresent()) {
+			Tupla tupla = productoMasBarato.get();
+			System.out.printf("| %-25s || %-25.2f | %n", tupla.nombre(), tupla.precio());
+		} else {
+			System.out.printf("| %-25s || %-25s | %n", "No se encontró", "producto");
+		}
+
+		System.out.println("--------------------------------------------------------");
+
 	}
 	
 	/**
@@ -244,7 +354,23 @@ class TiendaApplicationTests {
 	@Test
 	void test12() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre){}
+
+		var productosFabricante2 = listProds
+				.stream()
+				.filter(p -> p.getFabricante().getCodigo()==2)
+				.map(p -> new Tupla(p.getNombre()))
+				.toList();
+
+		System.out.println("-----------------------------");
+		System.out.printf("| %-25s | %n", "nombre" );
+		System.out.println("-----------------------------");
+		productosFabricante2.forEach(tupla -> {
+			System.out.printf("| %-25s | %n", tupla.nombre());
+		});
+		System.out.println("-----------------------------");
+
 	}
 	
 	/**
@@ -253,7 +379,24 @@ class TiendaApplicationTests {
 	@Test
 	void test13() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre) {}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> p.getPrecio() >= 120)
+				.map(p -> new Tupla(p.getNombre()))
+				.toList();
+
+		System.out.println("-----------------------------------");
+		System.out.printf("| %-32s | %n", "nombre" );
+		System.out.println("-----------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32s | %n", tupla.nombre());
+		});
+		System.out.println("-----------------------------------");
+
+
 	}
 	
 	/**
@@ -262,7 +405,24 @@ class TiendaApplicationTests {
 	@Test
 	void test14() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (int codigo, String nombre, double precio, int codigo_fabricante) {}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> p.getPrecio() >= 400)
+				.map(p -> new Tupla(p.getCodigo(), p.getNombre(), p.getPrecio(), p.getFabricante().getCodigo() ))
+				.toList();
+
+
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | | %-32s | %n", "codigo", "nombre", "precio", "codigo_fabricante" );
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32d | | %-32s | | %-32.2f | | %-32d |  %n", tupla.codigo(), tupla.nombre(), tupla.precio(), tupla.codigo_fabricante()  );
+		});
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+
 	}
 	
 	/**
@@ -271,7 +431,24 @@ class TiendaApplicationTests {
 	@Test
 	void test15() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (int codigo, String nombre, double precio, int codigo_fabricante) {}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> p.getPrecio() >= 80 && p.getPrecio() <= 300)
+				.map(p -> new Tupla(p.getCodigo(), p.getNombre(), p.getPrecio(), p.getFabricante().getCodigo() ))
+				.toList();
+
+
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | | %-32s | %n", "codigo", "nombre", "precio", "codigo_fabricante" );
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32d | | %-32s | | %-32.2f | | %-32d |  %n", tupla.codigo(), tupla.nombre(), tupla.precio(), tupla.codigo_fabricante()  );
+		});
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+
 	}
 	
 	/**
@@ -280,7 +457,24 @@ class TiendaApplicationTests {
 	@Test
 	void test16() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (int codigo, String nombre, double precio, int codigo_fabricante) {}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> p.getPrecio() > 200 && p.getFabricante().getCodigo() == 6)
+				.map(p -> new Tupla(p.getCodigo(), p.getNombre(), p.getPrecio(), p.getFabricante().getCodigo() ))
+				.toList();
+
+
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | | %-32s | %n", "codigo", "nombre", "precio", "codigo_fabricante" );
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32d | | %-32s | | %-32.2f | | %-32d |  %n", tupla.codigo(), tupla.nombre(), tupla.precio(), tupla.codigo_fabricante()  );
+		});
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+
 	}
 	
 	/**
@@ -289,7 +483,25 @@ class TiendaApplicationTests {
 	@Test
 	void test17() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (int codigo, String nombre, double precio, int codigo_fabricante) {}
+
+		Set<Integer> codigosFabricantes = Set.of(1, 3, 5);
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> codigosFabricantes.contains(p.getFabricante().getCodigo()))
+				.map(p -> new Tupla(p.getCodigo(), p.getNombre(), p.getPrecio(), p.getFabricante().getCodigo()))
+				.toList();
+
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | | %-32s | %n", "codigo", "nombre", "precio", "codigo_fabricante" );
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32d | | %-32s | | %-32.2f | | %-32d |  %n", tupla.codigo(), tupla.nombre(), tupla.precio(), tupla.codigo_fabricante()  );
+		});
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+
 	}
 	
 	/**
