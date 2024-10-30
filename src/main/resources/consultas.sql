@@ -12,3 +12,10 @@ SELECT p.nombre, ROUND(p.precio*1.08, 2) AS 'precio en dolares' FROM producto p;
 
 SELECT UPPER(p.nombre) AS nombre, ROUND(p.precio, 2) AS precio FROM producto p;
 
+# 4. Lista el nombre de todos los fabricantes y a continuación en mayúsculas los dos primeros caracteres del nombre del fabricante.
+
+SELECT CONCAT(UPPER(SUBSTRING(nombre, 1, 2)), SUBSTRING(nombre, 3)) AS nombre FROM fabricante;
+
+# 5. Lista el código de los fabricantes que tienen productos.
+
+SELECT DISTINCT f.codigo FROM fabricante f INNER JOIN producto p ON f.codigo = p.codigo_fabricante;

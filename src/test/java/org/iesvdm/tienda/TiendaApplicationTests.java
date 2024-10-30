@@ -130,12 +130,30 @@ class TiendaApplicationTests {
 		var listFabs = fabRepo.findAll();
 
 
-		record Tupla (String nombre, String iniciales){}
-		var result = listFabs.stream()
-				.map(p -> new Tupla(p.getNombre(), p.getNombre().substring(0, 2).toUpperCase()))
+		record Tupla (String nombre){}
+		var listaFabricantes = listFabs.stream()
+				.map(p -> new Tupla(capitalizeFirstTwoLetters(p.getNombre())))
 				.toList();
+		// Encabezado de la tabla
+		System.out.printf("%-35s%n", "Nombre fabricante");
+		System.out.println("------------------------");
 
-		result.forEach(tupla -> System.out.println("Nombre: "+ tupla.nombre()+ ", iniciales:0"+ tupla.iniciales()));
+		// Imprimir cada producto en formato de tabla
+		listaFabricantes.forEach(tupla ->
+				System.out.printf("%-35s%n", tupla.nombre())
+		);
+
+	}
+
+	public static String capitalizeFirstTwoLetters(String input){
+
+		if(input.length()==2) {
+			input = input.toUpperCase();
+		}else {
+			input=input.substring(0, 2).toUpperCase() + input.substring(2);
+		}
+
+		return input;
 
 	}
 	
@@ -145,7 +163,21 @@ class TiendaApplicationTests {
 	@Test
 	void test5() {
 		var listFabs = fabRepo.findAll();
-		//TODO		
+
+		record Tupla(Integer codigoFabricante){}
+
+		var fabricantesConProductos = listFabs.stream()
+				.filter(f -> !f.getProductos().isEmpty())
+				.map(f -> new Tupla(f.getCodigo()))
+				.toList();
+
+		System.out.printf("%-35s%n", "Nombre fabricante");
+		System.out.println("------------------------");
+
+		fabricantesConProductos.forEach( tupla ->
+				System.out.printf("%-35d%n", tupla.codigoFabricante())
+		);
+
 	}
 	
 	/**
