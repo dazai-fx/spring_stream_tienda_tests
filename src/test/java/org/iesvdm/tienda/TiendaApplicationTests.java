@@ -186,6 +186,9 @@ class TiendaApplicationTests {
 	@Test
 	void test6() {
 		var listFabs = fabRepo.findAll();
+
+		record Tupla(Integer codigoFabricante){}
+
 		//TODO
 	}
 	
