@@ -512,7 +512,23 @@ class TiendaApplicationTests {
 	@Test
 	void test18() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre, double precio){}
+
+		var listaProductos = listProds
+				.stream()
+				.map(p -> new Tupla(p.getNombre(),p.getPrecio()*100))
+				.toList();
+
+		System.out.println("-------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | %n", "nombre", "precio");
+		System.out.println("-------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32s | | %-32.2f | %n",  tupla.nombre(), tupla.precio() );
+		});
+		System.out.println("-------------------------------------------------------------------------");
+
+
 	}
 	
 	
@@ -522,7 +538,23 @@ class TiendaApplicationTests {
 	@Test
 	void test19() {
 		var listFabs = fabRepo.findAll();
-		//TODOS
+
+		record Tupla (String nombre){}
+
+		var listaFabricantes = listFabs
+				.stream()
+				.filter(f-> f.getNombre().startsWith("S"))
+				.map(f -> new Tupla(f.getNombre()))
+				.toList();
+
+		System.out.println("------------------------------------");
+		System.out.printf("| %-32s | %n", "nombre");
+		System.out.println("------------------------------------");
+		listaFabricantes.forEach(tupla -> {
+			System.out.printf("| %-32s | %n",  tupla.nombre() );
+		});
+		System.out.println("------------------------------------");
+
 	}
 	
 	/**
@@ -531,7 +563,24 @@ class TiendaApplicationTests {
 	@Test
 	void test20() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (int codigo, String nombre, double precio, int codigo_fabricante){}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> p.getNombre().contains("Portátil"))
+				.map(p -> new Tupla (p.getCodigo(), p.getNombre(), p.getPrecio(), p.getFabricante().getCodigo()))
+				.toList();
+
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | | %-32s | %n", "codigo", "nombre", "precio", "codigo_fabricante" );
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32d | | %-32s | | %-32.2f | | %-32d |  %n", tupla.codigo(), tupla.nombre(), tupla.precio(), tupla.codigo_fabricante()  );
+		});
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+
+
 	}
 	
 	/**
@@ -540,16 +589,56 @@ class TiendaApplicationTests {
 	@Test
 	void test21() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre){}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> p.getNombre().contains("Monitor") && p.getPrecio()<215)
+				.map(p -> new Tupla(p.getNombre()))
+				.toList();
+
+		System.out.println("------------------------------------");
+		System.out.printf("| %-32s | %n", "nombre");
+		System.out.println("------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32s | %n",  tupla.nombre() );
+		});
+		System.out.println("------------------------------------");
+
 	}
 	
 	/**
 	 * 22. Lista el nombre y el precio de todos los productos que tengan un precio mayor o igual a 180€. 
 	 * Ordene el resultado en primer lugar por el precio (en orden descendente) y en segundo lugar por el nombre (en orden ascendente).
 	 */
+	@Test
 	void test22() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre, double precio){}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> p.getPrecio() >= 180 )
+				.sorted((p1, p2) ->
+						Comparator.
+								comparingDouble((Producto p) -> p.getPrecio())
+								.reversed().
+								thenComparing((Producto p) -> p.getNombre())
+				.compare(p1,p2))
+				.map(p -> new Tupla (p.getNombre(), p.getPrecio()))
+				.toList();
+
+		System.out.println("------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | %n", "nombre", "precio");
+		System.out.println("------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32s | | %-32.2f | %n",  tupla.nombre(), tupla.precio());
+		});
+		System.out.println("------------------------------------------------------------------------");
+
+
 	}
 	
 	/**
@@ -559,9 +648,25 @@ class TiendaApplicationTests {
 	@Test
 	void test23() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombreProducto, double precio, String nombreFabricante){}
+
+		var listaProductos = listProds
+				.stream()
+				.sorted(Comparator.comparing( p -> p.getFabricante().getNombre()))
+				.map(p -> new Tupla(p.getNombre(), p.getPrecio(), p.getFabricante().getNombre()))
+				.toList();
+
+		System.out.println("--------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | %n", "nombre producto", "precio", "nombre fabricante" );
+		System.out.println("--------------------------------------------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32s | | %-32.2f | | %-32s | %n",  tupla.nombreProducto(), tupla.precio(), tupla.nombreFabricante());
+		});
+		System.out.println("--------------------------------------------------------------------------------------------------------------");
+
 	}
-	
+
 	/**
 	 * 24. Devuelve el nombre del producto, su precio y el nombre de su fabricante, del producto más caro.
 	 */
