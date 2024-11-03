@@ -94,3 +94,7 @@ WHERE precio >= 80 AND precio <= 300;
 SELECT *
 FROM producto
 WHERE codigo_fabricante IN (1, 3, 5);
+
+# 26. Devuelve un listado con todos los productos de los fabricantes Asus, Hewlett-Packard y Seagate
+
+SELECT * FROM producto p INNER JOIN fabricante f ON p.codigo_fabricante = f.codigo WHERE f.nombre IN ('Asus', 'Hewlett-Packard', 'Seagate');

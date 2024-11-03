@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -584,7 +586,31 @@ class TiendaApplicationTests {
 	@Test
 	void test26() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		Set <String> setFabricantes = new HashSet<>();
+
+		setFabricantes.add("Asus");
+		setFabricantes.add("Hewlett-Packard");
+		setFabricantes.add("Seagate");
+
+		record Tupla (int codigo, String nombreProducto, double precio, int codigo_fabricante, String nombreFabriante) {}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> setFabricantes.contains(p.getFabricante().getNombre()))
+				.map(p -> new Tupla(p.getCodigo(), p.getNombre(), p.getPrecio(), p.getFabricante().getCodigo(), p.getFabricante().getNombre()))
+				.toList();
+
+		System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | | %-32s | | %-32s | %n", "codigo", "nombre producto", "precio", "codigo_fabricante", "nombre fabricante" );
+		System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32d | | %-32s | | %-32.2f | | %-32d | | %-32s |  %n", tupla.codigo(), tupla.nombreProducto(), tupla.precio(), tupla.codigo_fabricante(), tupla.nombreFabriante()  );
+		});
+		System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+
+
 	}
 	
 	/**
@@ -664,7 +690,20 @@ Fabricante: Xiaomi
 	@Test
 	void test28() {
 		var listFabs = fabRepo.findAll();
-		//TODO
+
+		/*var listaFabricantesYProductos = listFabs
+				.stream()
+				.map(
+						f -> "Fabricante: "+ f.getNombre()+"\n\n"+
+								"Productos: "
+							+f.getProductos().stream()
+									.map(p -> p.getNombre()+"\n")
+				)
+				.collect(Collectors.joining()))
+				.toList();*/
+
+
+
 	}
 	
 	/**
