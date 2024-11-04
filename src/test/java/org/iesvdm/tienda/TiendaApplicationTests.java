@@ -59,9 +59,6 @@ class TiendaApplicationTests {
 				.map((p -> new Tupla(p.getNombre(), p.getPrecio())))
 				.toList();
 
-//		System.out.println("Nombre producto\t\t\tPrecio");
-//		listaNombresPrecios.forEach(x -> System.out.println(x));
-
 		// Encabezado de la tabla
 		System.out.printf("%-35s %-10s%n", "Nombre producto", "Precio");
 		System.out.println("-----------------------------------------------");
@@ -70,6 +67,8 @@ class TiendaApplicationTests {
 		listaNombresPrecios.forEach(tupla ->
 				System.out.printf("%-35s %-10.2f%n", tupla.nombre(), tupla.precio())
 		);
+
+		Assertions.assertEquals(11, listaNombresPrecios.size());
 
 	}
 	
@@ -93,6 +92,8 @@ class TiendaApplicationTests {
 		listaNombresPrecios.forEach(tupla ->
 				System.out.printf("%-38s %-20.2f%n", tupla.nombre(), tupla.precio())
 		);
+
+		Assertions.assertEquals(11, listaNombresPrecios.size());
 
 	}
 
@@ -123,6 +124,8 @@ class TiendaApplicationTests {
 				System.out.printf("%-35s %-10.2f%n", tupla.nombre(), tupla.precio())
 		);
 
+		Assertions.assertEquals(11, listaNombresPrecios.size());
+
 	}
 	
 	/**
@@ -145,6 +148,8 @@ class TiendaApplicationTests {
 		listaFabricantes.forEach(tupla ->
 				System.out.printf("%-35s%n", tupla.nombre())
 		);
+
+		Assertions.assertEquals(9, listaFabricantes.size());
 
 	}
 
@@ -181,6 +186,8 @@ class TiendaApplicationTests {
 				System.out.printf("%-35d%n", tupla.codigoFabricante())
 		);
 
+		Assertions.assertEquals(7, fabricantesConProductos.size());
+
 	}
 	
 	/**
@@ -205,6 +212,8 @@ class TiendaApplicationTests {
 		});
 
 		System.out.println();
+
+		Assertions.assertEquals(9, listaFabricantes.size());
 
 	}
 	
@@ -238,6 +247,8 @@ class TiendaApplicationTests {
 
 		System.out.println();
 
+		Assertions.assertEquals(11, listaProductos.size());
+
 	}
 	
 	/**
@@ -262,6 +273,8 @@ class TiendaApplicationTests {
 				System.out.printf("| %-25s | %n", Tupla.nombre())
 		);
 		System.out.println("----------------------------");
+
+		Assertions.assertEquals(5, primeros5Fabricantes.size());
 
 	}
 	
@@ -288,6 +301,7 @@ class TiendaApplicationTests {
 		);
 		System.out.println("--------------------------------------------------------");
 
+		Assertions.assertEquals(2, lista2Fabricantes.size());
 
 	}
 	
@@ -311,11 +325,15 @@ class TiendaApplicationTests {
 		if (productoMasBarato.isPresent()) {
 			Tupla tupla = productoMasBarato.get();
 			System.out.printf("| %-25s || %-25.2f | %n", tupla.nombre(), tupla.precio());
+			Assertions.assertEquals("Impresora HP Deskjet 3720", tupla.nombre());
+			Assertions.assertEquals(59,99, tupla.precio());
 		} else {
 			System.out.printf("| %-25s || %-25s | %n", "No se encontró", "producto");
 		}
 
 		System.out.println("--------------------------------------------------------");
+
+
 
 	}
 	
