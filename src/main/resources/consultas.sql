@@ -134,11 +134,49 @@ FROM producto p
 INNER JOIN fabricante f ON f.codigo = p.codigo_fabricante
 ORDER BY f.nombre;
 
+# 24. Devuelve el nombre del producto, su precio y el nombre de su fabricante, del producto más caro.
+
+SELECT p.nombre, p.precio, f.nombre
+FROM producto p
+INNER JOIN fabricante f on p.codigo_fabricante = f.codigo
+WHERE p.precio =
+    (SELECT MAX(precio)
+    FROM producto
+    );
+
+# 25 Devuelve una lista de todos los productos del fabricante Crucial que tengan un precio mayor que 200€.
+
+SELECT p.codigo, p.nombre, p.precio, p.codigo_fabricante
+FROM producto p
+INNER JOIN fabricante f on p.codigo_fabricante = f.codigo
+WHERE p.precio > 200 AND LOWER(f.nombre) = 'crucial';
+
 # 26. Devuelve un listado con todos los productos de los fabricantes Asus, Hewlett-Packard y Seagate
 
 SELECT *
 FROM producto p
 INNER JOIN fabricante f ON p.codigo_fabricante = f.codigo WHERE f.nombre IN ('Asus', 'Hewlett-Packard', 'Seagate');
+
+/*
+ 27. Devuelve un listado con el nombre de producto, precio y nombre de fabricante, de todos los productos que tengan un precio mayor o igual a 180€.
+	 * Ordene el resultado en primer lugar por el precio (en orden descendente) y en segundo lugar por el nombre.
+	 * El listado debe mostrarse en formato tabla. Para ello, procesa las longitudes máximas de los diferentes campos a presentar y compensa mediante la inclusión de espacios en blanco.
+	 * La salida debe quedar tabulada como sigue:
+ */
+
+SELECT p.nombre AS 'Producto', p.precio AS 'Precio', f.nombre as 'Fabricante'
+FROM producto p
+INNER JOIN fabricante f on p.codigo_fabricante = f.codigo
+WHERE p.precio >=180
+ORDER BY p.precio DESC, p.nombre;
+
+# 28. Devuelve un listado de los nombres fabricantes que existen en la base de datos, junto con los nombres productos que tiene cada uno de ellos.
+
+SELECT f.nombre AS Fabricante,
+       p.nombre AS Producto
+FROM fabricante f
+         LEFT JOIN producto p ON f.codigo = p.codigo_fabricante
+ORDER BY f.nombre, p.nombre;
 
 # 29. Devuelve un listado donde sólo aparezcan aquellos fabricantes que no tienen ningún producto asociado.
 
@@ -171,6 +209,12 @@ FROM producto;
 SELECT MIN(precio)
 FROM producto;
 
+# 34
+
+SELECT SUM(precio)
+FROM producto;
+
+
 #35
 
 SELECT count(p.codigo_fabricante)
@@ -187,12 +231,50 @@ WHERE LOWER(f.nombre) = 'asus';
 
 # 37
 
-/*SELECT *
-FROM producto
-join fabricante */
+SELECT MIN(p.precio) AS 'valor mínimo',
+       MAX(p.precio) AS 'valor máximo',
+       AVG(p.precio) AS 'media de los productos',
+       COUNT(p.precio) AS 'total de productos'
+FROM producto p
+INNER JOIN fabricante f on p.codigo_fabricante = f.codigo
+WHERE LOWER(f.nombre) = 'crucial';
 
 # 38
-SELECT f.nombre, count(*)
+SELECT f.nombre, COUNT(p.codigo) AS producto_count
 FROM fabricante f
-INNER join tienda.producto p on f.codigo = p.codigo_fabricante
-GROUP BY p.codigo_fabricante;
+         LEFT JOIN tienda.producto p ON f.codigo = p.codigo_fabricante
+GROUP BY f.codigo
+
+UNION
+
+SELECT f.nombre, COUNT(p.codigo) AS producto_count
+FROM tienda.producto p
+         RIGHT JOIN fabricante f ON f.codigo = p.codigo_fabricante
+GROUP BY f.codigo;
+
+# otra forma de hacerlo más directa
+
+SELECT f.nombre AS 'Fabricante', COUNT(p.codigo) AS '#Productos'
+FROM fabricante f
+LEFT JOIN tienda.producto p ON f.codigo = p.codigo_fabricante
+GROUP BY f.nombre;
+
+# 41. Devuelve un listado con los nombres de los fabricantes que tienen 2 o más productos.
+
+SELECT f.nombre
+FROM fabricante f
+INNER JOIN producto p on f.codigo = p.codigo_fabricante
+GROUP BY f.nombre
+HAVING COUNT(p.codigo) >= 2;
+
+# 42. Devuelve un listado con los nombres de los fabricantes y el número de productos que tiene cada uno con un precio superior o igual a 220 €.
+# 	 * Ordenado de mayor a menor número de productos.
+
+SELECT f.nombre AS Fabricante, COUNT(p.codigo) AS NumeroProductos
+FROM fabricante f
+LEFT JOIN producto p ON f.codigo = p.codigo_fabricante
+WHERE p.precio >= 220
+GROUP BY f.nombre
+HAVING COUNT(p.codigo) > 0
+ORDER BY NumeroProductos DESC;
+

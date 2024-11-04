@@ -673,7 +673,25 @@ class TiendaApplicationTests {
 	@Test
 	void test24() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String nombreProducto, double precio, String nombreFabricante){}
+
+		var listado = listProds
+				.stream()
+				.max(Comparator.comparingDouble(Producto::getPrecio))
+				.map(p-> new Tupla(p.getNombre(), p.getPrecio(), p.getFabricante().getNombre()))
+				.orElse(null);
+
+		System.out.println(listado);
+
+		System.out.println("--------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | %n", "nombre producto", "precio", "nombre fabricante" );
+		System.out.println("--------------------------------------------------------------------------------------------------------------");
+        System.out.printf("| %-32s | | %-32.2f | | %-32s | %n",  listado.nombreProducto(), listado.precio(), listado.nombreFabricante());
+		System.out.println("--------------------------------------------------------------------------------------------------------------");
+
+		Assertions.assertEquals("GeForce GTX 1080 Xtreme", listado.nombreProducto());
+
 	}
 	
 	/**
@@ -682,7 +700,25 @@ class TiendaApplicationTests {
 	@Test
 	void test25() {
 		var listProds = prodRepo.findAll();
-		//TODO	
+
+		record Tupla (int codigoProducto, String nombreProducto, double precio, int codigoFabricante){}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> p.getFabricante().getNombre().equalsIgnoreCase("crucial") && p.getPrecio()>200)
+				.map(p -> new Tupla(p.getCodigo(), p.getNombre(), p.getPrecio(), p.getFabricante().getCodigo()))
+				.toList();
+
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | | %-32s | %n", "codigo", "nombre", "precio", "codigo_fabricante" );
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32d | | %-32s | | %-32.2f | | %-32d |  %n", tupla.codigoProducto(), tupla.nombreProducto(), tupla.precio(), tupla.codigoFabricante()  );
+		});
+		System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------");
+
+		Assertions.assertEquals(1, listaProductos.size());
+
 	}
 	
 	/**
@@ -714,7 +750,7 @@ class TiendaApplicationTests {
 		});
 		System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
-
+		Assertions.assertEquals(5, listaProductos.size());
 
 	}
 	
@@ -735,7 +771,28 @@ Monitor 27 LED Full HD |199.25190000000003|Asus
 	@Test
 	void test27() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		record Tupla (String producto, double precio, String fabricante){}
+
+		var listaProductos = listProds
+				.stream()
+				.filter(p -> p.getPrecio()>=180)
+				.sorted(
+						Comparator.comparingDouble(Producto::getPrecio).reversed()
+								.thenComparing(Producto::getNombre))
+				.map(p -> new Tupla(p.getNombre(), p.getPrecio(), p.getFabricante().getNombre()))
+				.toList();
+
+		System.out.println("--------------------------------------------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | | %-32s | %n", "Producto", "Precio", "Fabricante" );
+		System.out.println("--------------------------------------------------------------------------------------------------------------");
+		listaProductos.forEach(tupla -> {
+			System.out.printf("| %-32s | | %-32.2f | | %-32s | %n",  tupla.producto(), tupla.precio(), tupla.fabricante());
+		});
+		System.out.println("--------------------------------------------------------------------------------------------------------------");
+
+
+
 	}
 	
 	/**
@@ -796,17 +853,21 @@ Fabricante: Xiaomi
 	void test28() {
 		var listFabs = fabRepo.findAll();
 
-		/*var listaFabricantesYProductos = listFabs
+		var listaFabricantesYProductos = listFabs
 				.stream()
-				.map(
-						f -> "Fabricante: "+ f.getNombre()+"\n\n"+
-								"Productos: "
-							+f.getProductos().stream()
-									.map(p -> p.getNombre()+"\n")
+				.map(f -> "Fabricante: " + f.getNombre() + "\n\n"+
+						"Productos: "+
+								f.getProductos().stream()
+										.map(p -> p.getNombre() + "\n")
+										.collect(Collectors.joining(""))
 				)
-				.collect(Collectors.joining()))
-				.toList();*/
+				.toList();
 
+		listaFabricantesYProductos.forEach(f ->
+						System.out.println(f)
+				);
+
+		Assertions.assertEquals(9, listaFabricantesYProductos.size());
 
 
 	}
@@ -825,7 +886,9 @@ Fabricante: Xiaomi
 				.filter(f -> f.getProductos().size()==0)
 				.toList();
 
-		listaFabricantes.forEach(f -> System.out.println(f));
+		listaFabricantes.forEach(System.out::println);
+
+		Assertions.assertEquals(2, listaFabricantes.size());
 
 	}
 	
@@ -907,7 +970,14 @@ Fabricante: Xiaomi
 	void test34() {
 		var listProds = prodRepo.findAll();
 
-		// todo
+		var sumaPreciosProducto = listProds
+				.stream()
+				.mapToDouble(p -> p.getPrecio())
+				.sum();
+
+		System.out.println(sumaPreciosProducto);
+
+		Assertions.assertEquals(2988.96, sumaPreciosProducto);
 
 	}
 	
@@ -958,23 +1028,32 @@ Fabricante: Xiaomi
 	void test37() {
 		var listProds = prodRepo.findAll();
 
-		// record Tupla (double precioMax, double precioMin, double precioMedio, int numTotal){}
-
-		/*var result = listProds
+		var result = listProds
 				.stream()
 				.filter(p -> p.getFabricante().getNombre().equalsIgnoreCase("crucial"))
 				.map(p -> new Double[]{
-						p.getPrecio(), p.getPrecio(), p.getPrecio(), 0.0
+						p.getPrecio(),
+						p.getPrecio(),
+						p.getPrecio(), 1.0
+
 				})
-				.reduce( (doubles, doubles2) -> new Double{
+				.reduce( (doubles, doubles2) -> new Double[]{
 					Math.min(doubles[0], doubles2[0]),
 					Math.max(doubles[1], doubles2[1]),
-					doubles[2]+doubles[2],
-					doubles[3]++
-						).orElse(new Double[])
-					}*/
+					doubles[2]+doubles2[2],
+					doubles[3]+1.0})
+				.orElse(new Double []{});
 
+		double media = result[3]>1.0 ? result[2]/result[3]: 0.0;
+		System.out.println("El valor mínimo: "+result[0]);
+		System.out.println("El valor máximo: "+result[1]);
+		System.out.println("La media de los productos es: "+media);
+		System.out.println("El total de productos: "+result[3].intValue());
 
+		Assertions.assertEquals(120.0, result[0]);
+		Assertions.assertEquals(755.0, result[1]);
+		Assertions.assertEquals(437.5, media);
+		Assertions.assertEquals(2, result[3].intValue());
 
 
 	}
@@ -1002,7 +1081,27 @@ Hewlett-Packard              2
 	@Test
 	void test38() {
 		var listFabs = fabRepo.findAll();
-		//TODO
+
+		record Tupla(String fabricante, int productos) {}
+
+		var listaFabricanteProductos = listFabs
+				.stream()
+				.map(f ->
+						new Tupla(f.getNombre(), f.getProductos().size())
+				)
+				.toList();
+
+		System.out.println("------------------------------------------------------------------------");
+		System.out.printf("| %-32s | | %-32s | %n", "Fabricante", "#Productos");
+		System.out.println("------------------------------------------------------------------------");
+		listaFabricanteProductos.forEach(listado -> {
+			System.out.printf("| %-32s | | %-32d |  %n",  listado.fabricante(), listado.productos());
+		});
+		System.out.println("-------------------------------------------------------------------------");
+
+		Assertions.assertEquals(9, listaFabricanteProductos.size());
+
+
 	}
 	
 	/**
@@ -1013,7 +1112,9 @@ Hewlett-Packard              2
 	@Test
 	void test39() {
 		var listFabs = fabRepo.findAll();
-		//TODO
+
+		// TODO
+
 	}
 	
 	/**
@@ -1032,7 +1133,22 @@ Hewlett-Packard              2
 	@Test
 	void test41() {
 		var listFabs = fabRepo.findAll();
-		//TODO
+
+		record Tupla (String nombreFabricante){}
+
+		var listaFabricantes = listFabs
+				.stream()
+				.filter(f -> f.getProductos().size() >= 2)
+				.map(f -> new Tupla(f.getNombre()))
+				.toList();
+
+		System.out.println("Listado de fabricantes: ");
+		listaFabricantes.forEach(tupla -> {
+			System.out.println(tupla.nombreFabricante());
+		});
+
+		Assertions.assertEquals(4, listaFabricantes.size());
+
 	}
 	
 	/**
@@ -1042,7 +1158,27 @@ Hewlett-Packard              2
 	@Test
 	void test42() {
 		var listFabs = fabRepo.findAll();
-		//TODO
+
+		record Tupla(String nombreFabricante, long numProductos) {}
+
+		var listaFabricantes = listFabs.stream()
+				.map(f -> new Tupla(
+						f.getNombre(),
+						f.getProductos().stream()
+								.filter(p -> p.getPrecio() >= 220)
+								.count()
+				))
+				.filter(tupla -> tupla.numProductos() > 0) // Filtrar fabricantes con al menos un producto >= 220 €
+				.sorted(Comparator.comparingLong(Tupla::numProductos).reversed()) // Ordenar por número de productos descendente
+				.toList();
+
+		System.out.println("Listado de fabricantes: ");
+		listaFabricantes.forEach(tupla -> {
+			System.out.println(tupla.nombreFabricante()+" "+ tupla.numProductos());
+		});
+
+		Assertions.assertEquals(3, listaFabricantes.size());
+
 	}
 	
 	/**
