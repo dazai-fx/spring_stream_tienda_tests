@@ -139,3 +139,60 @@ ORDER BY f.nombre;
 SELECT *
 FROM producto p
 INNER JOIN fabricante f ON p.codigo_fabricante = f.codigo WHERE f.nombre IN ('Asus', 'Hewlett-Packard', 'Seagate');
+
+# 29. Devuelve un listado donde sólo aparezcan aquellos fabricantes que no tienen ningún producto asociado.
+
+SELECT f.nombre
+FROM fabricante f
+WHERE f.codigo NOT IN (SELECT codigo_fabricante FROM producto);
+
+SELECT f.nombre
+FROM fabricante f
+LEFT JOIN producto p ON f.codigo = p.codigo_fabricante
+WHERE codigo_fabricante IS NULL;
+
+# 	 * 30. Calcula el número total de productos que hay en la tabla productos. Utiliza la api de stream.
+
+SELECT COUNT(*)
+FROM producto;
+
+# 31
+
+SELECT count(distinct codigo_fabricante) as "num prod"
+FROM producto
+
+# 32
+
+SELECT AVG(precio)
+FROM producto;
+
+# 33
+
+SELECT MIN(precio)
+FROM producto;
+
+#35
+
+SELECT count(p.codigo_fabricante)
+FROM producto p
+INNER JOIN fabricante f ON p.codigo_fabricante  = f.codigo
+WHERE LOWER(f.nombre) = 'asus';
+
+#36
+
+SELECT avg(p.precio)
+FROM producto p
+join tienda.fabricante f on f.codigo = p.codigo_fabricante
+WHERE LOWER(f.nombre) = 'asus';
+
+# 37
+
+/*SELECT *
+FROM producto
+join fabricante */
+
+# 38
+SELECT f.nombre, count(*)
+FROM fabricante f
+INNER join tienda.producto p on f.codigo = p.codigo_fabricante
+GROUP BY p.codigo_fabricante;

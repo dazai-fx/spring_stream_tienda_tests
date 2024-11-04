@@ -4,14 +4,12 @@ import org.iesvdm.tienda.modelo.Fabricante;
 import org.iesvdm.tienda.modelo.Producto;
 import org.iesvdm.tienda.repository.FabricanteRepository;
 import org.iesvdm.tienda.repository.ProductoRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -638,6 +636,8 @@ class TiendaApplicationTests {
 		});
 		System.out.println("------------------------------------------------------------------------");
 
+		//Assertions.assertEquals(2, listaProductos.size());
+		// así iriamos probando cada consulta con listados
 
 	}
 	
@@ -817,7 +817,16 @@ Fabricante: Xiaomi
 	@Test
 	void test29() {
 		var listFabs = fabRepo.findAll();
-		//TODO
+
+		record Tupla (String nombre, String nombreFabricante) {}
+
+		var listaFabricantes = listFabs
+				.stream()
+				.filter(f -> f.getProductos().size()==0)
+				.toList();
+
+		listaFabricantes.forEach(f -> System.out.println(f));
+
 	}
 	
 	/**
@@ -826,7 +835,15 @@ Fabricante: Xiaomi
 	@Test
 	void test30() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		var numProd = listProds
+				.stream()
+				.count();
+
+		System.out.println(numProd);
+
+		Assertions.assertEquals(11, numProd);
+
 	}
 
 	
@@ -836,7 +853,14 @@ Fabricante: Xiaomi
 	@Test
 	void test31() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		var numFabConProd = listProds
+				.stream()
+				.map(p -> p.getFabricante()).distinct().count();
+		System.out.println(numFabConProd);
+
+		Assertions.assertEquals(7, numFabConProd);
+
 	}
 	
 	/**
@@ -845,7 +869,17 @@ Fabricante: Xiaomi
 	@Test
 	void test32() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		var result = listProds
+				.stream()
+				.mapToDouble(p -> p.getPrecio()).average();
+
+		// el average() devuelve la media pero en un optional por eso debemos de poner un .orElse con el valor que debería devolver en caso que no haya productos
+
+		System.out.println(result.orElse(0));
+
+		Assertions.assertEquals(271.7236363636364, result.orElse(0));
+
 	}
 	
 	/**
@@ -854,7 +888,16 @@ Fabricante: Xiaomi
 	@Test
 	void test33() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		OptionalDouble precioMasBarato = listProds
+				.stream()
+				.mapToDouble(p -> p.getPrecio()).min();
+
+		System.out.println(precioMasBarato.orElse(0.0));
+
+		Assertions.assertEquals(59.99, precioMasBarato.orElse(0.0));
+
+
 	}
 	
 	/**
@@ -863,7 +906,9 @@ Fabricante: Xiaomi
 	@Test
 	void test34() {
 		var listProds = prodRepo.findAll();
-		//TODO	
+
+		// todo
+
 	}
 	
 	/**
@@ -872,7 +917,17 @@ Fabricante: Xiaomi
 	@Test
 	void test35() {
 		var listProds = prodRepo.findAll();
-		//TODO		
+
+		var numProductosAsus = listProds
+				.stream()
+				.filter(p -> p.getFabricante().getNombre().equals("Asus"))
+				.count();
+
+		System.out.println(numProductosAsus);
+
+		Assertions.assertEquals(2, numProductosAsus);
+		//Assertions.assertTrue(numProductosAsus==2);
+
 	}
 	
 	/**
@@ -881,7 +936,17 @@ Fabricante: Xiaomi
 	@Test
 	void test36() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		var mediaPreciosAsus = listProds
+				.stream()
+				.filter(p -> p.getFabricante().getNombre().equals("Asus"))
+				.mapToDouble(p -> p.getPrecio()).average()
+				.orElse(0.0);
+
+		System.out.println(mediaPreciosAsus);
+
+		Assertions.assertEquals(223.995, mediaPreciosAsus);
+
 	}
 	
 	
@@ -892,7 +957,26 @@ Fabricante: Xiaomi
 	@Test
 	void test37() {
 		var listProds = prodRepo.findAll();
-		//TODO
+
+		// record Tupla (double precioMax, double precioMin, double precioMedio, int numTotal){}
+
+		/*var result = listProds
+				.stream()
+				.filter(p -> p.getFabricante().getNombre().equalsIgnoreCase("crucial"))
+				.map(p -> new Double[]{
+						p.getPrecio(), p.getPrecio(), p.getPrecio(), 0.0
+				})
+				.reduce( (doubles, doubles2) -> new Double{
+					Math.min(doubles[0], doubles2[0]),
+					Math.max(doubles[1], doubles2[1]),
+					doubles[2]+doubles[2],
+					doubles[3]++
+						).orElse(new Double[])
+					}*/
+
+
+
+
 	}
 	
 	/**
