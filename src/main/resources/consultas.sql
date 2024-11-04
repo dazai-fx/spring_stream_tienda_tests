@@ -278,3 +278,20 @@ GROUP BY f.nombre
 HAVING COUNT(p.codigo) > 0
 ORDER BY NumeroProductos DESC;
 
+# 43.Devuelve un listado con los nombres de los fabricantes donde la suma del precio de todos sus productos es superior a 1000 €
+
+SELECT f.nombre AS Fabricante, SUM(p.precio) AS SumaPrecios
+FROM fabricante f
+         INNER JOIN producto p ON f.codigo = p.codigo_fabricante
+GROUP BY f.nombre
+HAVING SUM(p.precio) > 1000;
+
+#  * 44. Devuelve un listado con los nombres de los fabricantes donde la suma del precio de todos sus productos es superior a 1000 €
+# 	 * Ordenado de menor a mayor por cuantía de precio de los productos.
+
+SELECT f.nombre AS Fabricante, SUM(p.precio) AS SumaPrecios
+FROM fabricante f
+         LEFT JOIN producto p ON f.codigo = p.codigo_fabricante
+GROUP BY f.nombre
+HAVING SUM(p.precio) > 1000
+ORDER BY SumaPrecios ASC;

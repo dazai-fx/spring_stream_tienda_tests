@@ -1187,7 +1187,24 @@ Hewlett-Packard              2
 	@Test
 	void test43() {
 		var listFabs = fabRepo.findAll();
-		//TODO
+
+		record Tupla(String nombreFabricante, double sumaPrecios) {}
+
+		var listaFabricantes = listFabs.stream()
+				.map(f -> new Tupla(
+						f.getNombre(),
+						f.getProductos().stream().mapToDouble(Producto::getPrecio).sum()
+				))
+				.filter(t -> t.sumaPrecios() > 1000)
+				.collect(Collectors.toList());
+
+		System.out.println("Fabricantes con suma de precios superior a 1000 €:");
+		listaFabricantes.forEach(tupla -> {
+			System.out.println("Fabricante: " + tupla.nombreFabricante() + ", Suma de Precios: " + tupla.sumaPrecios());
+		});
+
+		Assertions.assertEquals(1, listaFabricantes.size());
+
 	}
 	
 	/**
@@ -1197,7 +1214,24 @@ Hewlett-Packard              2
 	@Test
 	void test44() {
 		var listFabs = fabRepo.findAll();
-		//TODO	
+
+		record Tupla(String nombreFabricante, double sumaPrecios) {}
+
+		var listaFabricantes = listFabs.stream()
+				.map(f -> new Tupla(
+						f.getNombre(),
+						f.getProductos().stream().mapToDouble(Producto::getPrecio).sum()
+				))
+				.filter(t -> t.sumaPrecios() > 1000)
+				.sorted(Comparator.comparingDouble(Tupla::sumaPrecios))
+				.toList();
+
+		System.out.println("Fabricantes con suma de precios superior a 1000 €, ordenados de menor a mayor:");
+		listaFabricantes.forEach(tupla -> {
+			System.out.println("Fabricante: " + tupla.nombreFabricante() + ", Suma de Precios: " + tupla.sumaPrecios());
+		});
+
+
 	}
 	
 	/**
